@@ -1,5 +1,4 @@
 import { UserData } from "../api"
-import cookie from "js-cookie"
 import { RootState } from "."
 import { Middleware } from "redux"
 import { Action } from "./index"

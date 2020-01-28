@@ -10,7 +10,6 @@ import Header from "./layout/Header"
 import Footer from "./layout/Footer"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
-import cookiejs from "js-cookie"
 
 const store = configureStore()
 
