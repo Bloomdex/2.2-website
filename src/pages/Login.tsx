@@ -8,6 +8,7 @@ import { push } from "connected-react-router"
 const mapStateToProps = (state: RootState) => ({
 	username: state.loginForm.username,
 	password: state.loginForm.password,
+	doRedirect: state.user.isLoggedIn,
 })
 
 const mapDispatchToProps = {
@@ -36,6 +37,7 @@ const mapDispatchToProps = {
 			}
 		}
 	},
+	onLoggedIn: () => push("/"),
 }
 
 const connector = connect(mapStateToProps, mapDispatchToProps)
@@ -44,39 +46,46 @@ type Props = ConnectedProps<typeof connector>
 const Login = ({
 	username,
 	password,
+	doRedirect,
 	onUsernameChange,
 	onPasswordChange,
 	onSubmit,
-}: Props) => (
-	<main>
-		<form onSubmit={e => e.preventDefault()}>
-			<label>
-				username{" "}
+	onLoggedIn,
+}: Props) => {
+	if (doRedirect) {
+		onLoggedIn()
+	}
+	return (
+		<main>
+			<form onSubmit={e => e.preventDefault()}>
+				<label>
+					username{" "}
+					<input
+						type="text"
+						onChange={e => onUsernameChange(e.target.value)}
+						value={username}
+					/>
+				</label>
+				<br />
+				<label>
+					password{" "}
+					<input
+						type="password"
+						onChange={e => onPasswordChange(e.target.value)}
+						value={password}
+					/>
+				</label>
+				<br />
 				<input
-					type="text"
-					onChange={e => onUsernameChange(e.target.value)}
-					value={username}
+					type="submit"
+					value="login"
+					onClick={() => {
+						onSubmit(username, password)
+					}}
 				/>
-			</label>
-			<br />
-			<label>
-				password{" "}
-				<input
-					type="password"
-					onChange={e => onPasswordChange(e.target.value)}
-					value={password}
-				/>
-			</label>
-			<br />
-			<input
-				type="submit"
-				value="login"
-				onClick={() => {
-					onSubmit(username, password)
-				}}
-			/>
-		</form>
-	</main>
-)
+			</form>
+		</main>
+	)
+}
 
 export default connector(Login)

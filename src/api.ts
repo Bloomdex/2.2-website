@@ -1,26 +1,21 @@
-const DEFAULT_BOUNDS = {
-	max: {
-		latitude: 14.945,
-		longitude: -62.183,
-	},
-	min: {
-		latitude: -6.839,
-		longitude: -84.155,
-	},
-}
-const DEFAULT_CENTER: LatLng = {
-	latitude: 4.14,
-	longitude: -73.15,
-}
-
-const API_ENDPOINT = process.env.API_ENDPOINT as string
+import { API_ENDPOINT, DEFAULT_BOUNDS, DEFAULT_CENTER } from "./config"
 
 const path = (...parts: string[]) => {
 	if (!parts[0].startsWith(API_ENDPOINT)) {
 		parts.unshift(API_ENDPOINT)
 	}
-	return parts.join("/").replace(/(?<!https?:)\/\//, "/")
+
+	return parts.map(p => (p.startsWith("/") ? p.slice(1) : p)).join("/")
 }
+
+const get = (url: string, options?: RequestInit, params?: URLSearchParams) =>
+	fetch(`${url}${params ? `?${params.toString()}` : ""}`, {
+		method: "GET",
+		credentials: "include",
+		mode: "cors",
+		cache: "default",
+		...options,
+	})
 
 export type UserData = {
 	authorities: string[]
@@ -42,9 +37,7 @@ const WithAuth = ({ username, password }: Credentials) => ({
 })
 
 export async function getLoginFromCookie(): Promise<GetLoginFromCookieReturn> {
-	const response = await fetch(path("/me"), {
-		credentials: "include",
-	})
+	const response = await get(path("/me"))
 	if (response.ok) {
 		return response.json()
 	} else {
@@ -57,11 +50,10 @@ type GetCurrentUserReturn = UserData | null
 export async function getCurrentUser(
 	creds: Credentials,
 ): Promise<GetCurrentUserReturn> {
-	const response = await fetch(path("/me"), {
+	const response = await get(path("/me"), {
 		headers: {
 			...WithAuth(creds),
 		},
-		credentials: "include",
 	})
 	if (response.ok) {
 		return {
@@ -73,7 +65,7 @@ export async function getCurrentUser(
 	}
 }
 
-type LatLng = {
+export type LatLng = {
 	latitude: number
 	longitude: number
 }
@@ -92,20 +84,55 @@ export type StationDetails = {
 
 export async function getStations(
 	center: LatLng = DEFAULT_CENTER,
-	radius: number,
+	radius: number = 1000,
 ): Promise<StationDetails[]> {
-	const url = new URL(path("/stations/radius"))
-	url.searchParams.append("latitude", center.latitude.toFixed(3))
-	url.searchParams.append("longitude", center.longitude.toFixed(3))
-	url.searchParams.append("radius_km", radius.toFixed(3))
+	const searchParams = new URLSearchParams()
+	searchParams.append("latitude", center.latitude.toFixed(3))
+	searchParams.append("longitude", center.longitude.toFixed(3))
+	searchParams.append("radius_km", radius.toFixed(3))
 
-	const response = await fetch(url.toString(), {
-		credentials: "include",
-	})
+	const response = await get(
+		`${path("/stations/radius")}?${searchParams.toString()}`,
+	)
 
 	if (response.ok) {
 		return response.json()
 	} else {
-		throw response
+		throw response.statusText
+	}
+}
+
+export type Date = {
+	year: number
+	month: number
+	day: number
+}
+
+export type CompoundMeasurement = {
+	avgTemperature: number
+	minTemperature: number
+	maxTemperature: number
+
+	avgRainfall: number
+	minRainfall: number
+	maxRainfall: number
+
+	avgDewPoint: number
+} & Date
+
+// type GetMeasureMentsReturn = Promise<
+export async function getAverageMeasurementMinimal(
+	stationid: StationDetails["id"],
+): Promise<CompoundMeasurement[]> {
+	const response = await get(
+		path(`/stations/${stationid}/measurements/average/month`),
+		{},
+		new URLSearchParams({ type: "vegaflor" }),
+	)
+
+	if (response.ok) {
+		return response.json()
+	} else {
+		throw Error(response.statusText)
 	}
 }

@@ -25,7 +25,7 @@ const loggedOutState: UserState = {
 	authorities: [],
 }
 
-export default function user(
+export default function userReducer(
 	oldState: UserState = loggedOutState,
 	action: UserAction,
 ): UserState {
@@ -51,13 +51,5 @@ export default function user(
 		}
 		default:
 			return oldState
-	}
-}
-
-export const cookieMiddleware: Middleware<{}, RootState> = store => next => (
-	action: Action,
-) => {
-	if (action.type === "USER_LOGOUT") {
-		cookie.remove("JSESSIONID")
 	}
 }

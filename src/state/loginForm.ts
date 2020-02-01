@@ -29,7 +29,7 @@ type LoginFormActions = {
 }
 export type LoginFormAction = LoginFormActions[keyof LoginFormActions]
 
-export default function loginForm(
+export default function loginFormReducer(
 	oldState: LoginFormState = {
 		username: "",
 		password: "",

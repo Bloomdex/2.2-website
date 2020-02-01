@@ -11,21 +11,16 @@ const connector = connect(mapStateToProps)
 
 type Props = ConnectedProps<typeof connector>
 
-function Header({ isLoggedIn, username }: Props) {
-	let loggedInComponent = null
-	if (isLoggedIn) {
-		loggedInComponent = (
+const Header = ({ isLoggedIn, username }: Props) => (
+	<header style={{ textAlign: "center" }}>
+		<h1>Hello, world</h1>
+		{isLoggedIn ? (
 			<div>
 				<span>logged in user: {username}</span>
-				<button />
+				{/* <button /> */}
 			</div>
-		)
-	}
-	return (
-		<header>
-			<h1>Hello, world</h1>
-		</header>
-	)
-}
+		) : null}
+	</header>
+)
 
 export default connector(Header)

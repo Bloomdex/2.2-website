@@ -10,6 +10,7 @@ import Header from "./layout/Header"
 import Footer from "./layout/Footer"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
+import Map from "./pages/Map"
 
 const store = configureStore()
 
@@ -25,6 +26,9 @@ render(
 						<Switch>
 							<Route path="/login">
 								<Login />
+							</Route>
+							<Route path="/map">
+								<Map />
 							</Route>
 							<Route path="/">
 								<Home />
