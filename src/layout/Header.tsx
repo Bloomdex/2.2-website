@@ -10,7 +10,13 @@ const mapStateToProps = (state: RootState) => ({
 	isAdmin: state.user.authorities.includes(UserAuthority.Admin),
 })
 
-const connector = connect(mapStateToProps)
+const mapDispatchToProps = {
+	handleLogout: () => ({
+		type: "USER_LOGOUT",
+	}),
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps)
 
 const liStyle: CSSProperties = {
 	display: "inline",
@@ -18,7 +24,7 @@ const liStyle: CSSProperties = {
 }
 type Props = ConnectedProps<typeof connector>
 
-const Header = ({ isLoggedIn, username }: Props) => (
+const Header = ({ isLoggedIn, username, isAdmin, handleLogout }: Props) => (
 	<header
 		style={{
 			display: "grid",
@@ -44,11 +50,23 @@ const Header = ({ isLoggedIn, username }: Props) => (
 					<li style={liStyle}>
 						<Link to="/stationviewer">Stations</Link>
 					</li>
-					{}
+					{isAdmin ? (
+						<li style={liStyle}>
+							<Link to="/users">Users</Link>
+						</li>
+					) : null}
 				</ul>
-				<span style={{ margin: "auto", gridColumn: "4" }}>
-					logged in user: {username}
-				</span>
+				<div
+					style={{
+						display: "inline-block",
+						gridColumn: "4",
+						margin: "auto 20px",
+						textAlign: "center",
+					}}
+				>
+					<span style={{ margin: "auto" }}>logged in user: {username}</span>
+					<button onClick={() => handleLogout()}>logout</button>
+				</div>
 			</>
 		) : null}
 	</header>

@@ -2,12 +2,22 @@ import { API_ENDPOINT, DEFAULT_BOUNDS, DEFAULT_CENTER } from "./config"
 import { push } from "connected-react-router"
 import configureStore from "./state"
 
-const path = (...parts: string[]) => {
-	if (!parts[0].startsWith(API_ENDPOINT)) {
-		parts.unshift(API_ENDPOINT)
+declare global {
+	interface Window {
+		store: ReturnType<typeof configureStore>
 	}
+}
 
-	return parts.map(p => (p.startsWith("/") ? p.slice(1) : p)).join("/")
+const path = (...parts: string[]) => {
+	return [
+		window.location.protocol,
+		"//",
+		window.location.host,
+		API_ENDPOINT,
+		...parts,
+	]
+		.map(p => (p.startsWith("/") ? p.slice(1) : p))
+		.join("/")
 }
 
 const customFetch = (
@@ -22,12 +32,6 @@ const customFetch = (
 		cache: "default",
 		...options,
 	})
-
-declare global {
-	interface Window {
-		store: ReturnType<typeof configureStore>
-	}
-}
 
 const redirectIfUnauthorized = (response: Response) => {
 	if (!response.ok && response.status === 401) {
@@ -85,6 +89,16 @@ export async function getCurrentUser(
 	} else {
 		redirectIfUnauthorized(response)
 		return null
+	}
+}
+
+export async function logout() {
+	const response = await customFetch(path("/logout"))
+	if (response.ok) {
+		return response.json()
+	} else {
+		// redirectIfUnauthorized(response)
+		throw new Error(response.statusText)
 	}
 }
 
@@ -258,7 +272,7 @@ export enum UserAuthority {
 	Admin = "ROLE_ADMIN",
 }
 
-export async function getUsers() {
+export async function getUsers(): Promise<UserData[]> {
 	const response = await customFetch(path("/users"))
 	if (response.ok) {
 		return response.json()
@@ -302,6 +316,9 @@ async function changeAuthorityToUser(
 		path(`/users/authority/${username}`),
 		{
 			method: add ? "POST" : "DELETE",
+			headers: {
+				"Content-Type": "application/octet-stream",
+			},
 		},
 		new URLSearchParams({ role: authority }),
 	)
