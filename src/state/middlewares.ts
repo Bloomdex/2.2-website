@@ -13,11 +13,13 @@ import {
 	addAuthorityToUser,
 	removeAuthorityFromUser,
 	changeUserPassword,
+	logout,
 } from "../api"
 import { ViewingMethod } from "./stationViewer"
 import { AdminUsersAction } from "./adminUsers"
+import { push } from "connected-react-router"
 
-export const loginSetup: Middleware<
+export const loginHandling: Middleware<
 	{},
 	RootState,
 	/// @ts-ignore
@@ -34,11 +36,13 @@ export const loginSetup: Middleware<
 
 			dispatch({ type: "HOME_SET_DESIRABLE_STAIONS", payload: stations })
 		}) as unknown) as Action)
-		if (action.payload.authorities.includes(UserAuthority.Admin)) {
-			store.dispatch(((async (dispatch: Dispatch<Action>) => {
-				const users = await getUsers()
-			}) as unknown) as Action)
-		}
+	}
+	if (action.type === "USER_LOGOUT") {
+		store.dispatch(((async (dispatch: Dispatch<Action>) => {
+			await logout()
+
+			dispatch(push("/login"))
+		}) as unknown) as Action)
 	}
 
 	next(action)
@@ -98,6 +102,20 @@ export const adminUserApiCalls: Middleware<
 	/// @ts-ignore
 	Dispatch<Action>
 > = store => next => (action: AdminUsersAction) => {
+	if (
+		(action as Action).type === "USER_LOGIN" &&
+		/// @ts-ignore
+		action.payload.authorities.includes(UserAuthority.Admin)
+	) {
+		store.dispatch(((async (dispatch: Dispatch<Action>) => {
+			const users = await getUsers()
+			dispatch({
+				type: "ADMIN_USERS_ADD_USERS",
+				payload: users,
+			})
+		}) as unknown) as Action)
+	}
+
 	const apiFailed = () => {
 		store.dispatch({
 			type: "ADMIN_USERS_API_FAILED",
@@ -110,7 +128,11 @@ export const adminUserApiCalls: Middleware<
 			break
 		}
 		case "ADMIN_USERS_DELETE_USER": {
-			deleteUser(action.payload).catch(apiFailed)
+			if (store.getState().adminUsers.length > 1) {
+				deleteUser(action.payload).catch(apiFailed)
+			} else {
+				throw new Error("You can't delete the last user")
+			}
 			break
 		}
 		case "ADMIN_USERS_ADD_AUTHORITY": {

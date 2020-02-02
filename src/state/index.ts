@@ -7,16 +7,23 @@ import {
 	RouterAction,
 } from "connected-react-router"
 import thunk, { ThunkAction } from "redux-thunk"
-import loginFormReducer, { LoginFormAction, LoginFormState } from "./loginForm"
+import userInputReducer, { UserInputAction, UserInputState } from "./UserInput"
 import userReducer, { UserAction, UserState } from "./user"
 import stationReducer, { StationAction, StationState } from "./stations"
-import { loginSetup, stationMeasurementGetter } from "./middlewares"
+import {
+	loginHandling,
+	stationMeasurementGetter,
+	adminUserApiCalls,
+} from "./middlewares"
 import HomeReducer, { HomeAction, HomeState } from "./home"
 import stationViewerReducer, {
 	StationViewerAction,
 	StationVieuwerState,
 } from "./stationViewer"
-import { AdminUsersAction } from "./adminUsers"
+import adminUsersReducer, {
+	AdminUsersAction,
+	AdminUsersState,
+} from "./adminUsers"
 
 export const history = createBrowserHistory()
 
@@ -30,11 +37,12 @@ export default function configureStore() {
 	return createStore(
 		combineReducers({
 			router: connectRouter(history),
-			loginForm: loginFormReducer,
+			userInput: userInputReducer,
 			user: userReducer,
 			stations: stationReducer,
 			home: HomeReducer,
 			stationViewer: stationViewerReducer,
+			adminUsers: adminUsersReducer,
 		}),
 		// preloadedState,
 		(
@@ -45,8 +53,9 @@ export default function configureStore() {
 			applyMiddleware(
 				thunk,
 				routerMiddleware(history),
-				loginSetup,
+				loginHandling,
 				stationMeasurementGetter,
+				adminUserApiCalls,
 			),
 		),
 	)
@@ -54,14 +63,15 @@ export default function configureStore() {
 
 export type RootState = Readonly<{
 	router: Readonly<RouterState>
-	loginForm: Readonly<LoginFormState>
+	userInput: Readonly<UserInputState>
 	user: Readonly<UserState>
 	stations: Readonly<StationState>
 	home: Readonly<HomeState>
 	stationViewer: Readonly<StationVieuwerState>
+	adminUsers: Readonly<AdminUsersState>
 }>
 export type Action =
-	| LoginFormAction
+	| UserInputAction
 	| UserAction
 	| StationAction
 	| HomeAction

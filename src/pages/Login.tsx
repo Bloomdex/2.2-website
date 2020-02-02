@@ -6,18 +6,18 @@ import { getCurrentUser } from "../api"
 import { push } from "connected-react-router"
 
 const mapStateToProps = (state: RootState) => ({
-	username: state.loginForm.username,
-	password: state.loginForm.password,
+	username: state.userInput.login.username,
+	password: state.userInput.login.password,
 	doRedirect: state.user.isLoggedIn,
 })
 
 const mapDispatchToProps = {
 	onUsernameChange: (username: string) => ({
-		type: "LOGINFORM_SET_USERNAME",
+		type: "USER_INPUT_LOGIN_SET_USERNAME",
 		payload: username,
 	}),
 	onPasswordChange: (password: string) => ({
-		type: "LOGINFORM_SET_PASSWORD",
+		type: "USER_INPUT_LOGIN_SET_PASSWORD",
 		payload: password,
 	}),
 	onSubmit: (username: string, password: string) => {
@@ -32,8 +32,6 @@ const mapDispatchToProps = {
 					},
 				})
 				dispatch(push("/"))
-			} else {
-				dispatch({ type: "LOGINFORM_LOGIN_FAILED" })
 			}
 		}
 	},

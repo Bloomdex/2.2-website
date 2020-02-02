@@ -11,6 +11,8 @@ import Footer from "./layout/Footer"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
 import StationInfo from "./pages/StationViewer"
+import Users from "./pages/Users"
+import UserPage from "./pages/UserPage"
 
 const store = configureStore()
 
@@ -37,6 +39,12 @@ render(
 							</Route>
 							<Route path="/stationviewer">
 								<StationInfo />
+							</Route>
+							<Route exact path="/users">
+								<Users />
+							</Route>
+							<Route path="/users/:username">
+								<UserPage />
 							</Route>
 							<Route exact path="/">
 								<Home />
