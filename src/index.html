@@ -1,17 +1,35 @@
 <!DOCTYPE html>
-<head>
-	<title>This will work!</title>
-	<script src="index.tsx" defer></script>
-	<style>
-		html,
-		body {
-			margin: 0;
-			padding: 0;
-			height: 100vh;
-			width: 100vw;
-		}
-	</style>
-</head>
-<body>
-	<div id="container"></div>
-</body>
+<html lang="en">
+	<head>
+		<title>Vegaflor weather service</title>
+		<script src="index.tsx" defer></script>
+		<meta name="viewport" content="width=1400px, initial-scale=1.0" />
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100vh;
+				width: 100vw;
+			}
+
+			button {
+				background: none !important;
+				border: none;
+				padding: 0 !important;
+				margin: 10px;
+
+				/*optional*/
+				font-family: arial, sans-serif; /*input has OS specific font-family*/
+				color: #069;
+				cursor: pointer;
+			}
+			button:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+	</body>
+</html>

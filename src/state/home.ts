@@ -1,8 +1,19 @@
-import { StationDetails, CompoundMeasurement } from "../api"
+import {
+	StationDetails,
+	CompoundMeasurementMinimal,
+	DesirableStation,
+} from "../api"
+
+export enum DataType {
+	Temperature = 1,
+	Rain,
+}
 
 export type HomeState = {
 	selectedStationId: StationDetails["id"] | null
-	measurements: CompoundMeasurement[] | null
+	measurements: CompoundMeasurementMinimal[] | null
+	dataType: DataType
+	desirableStations: DesirableStation[]
 }
 
 type HomeActions = {
@@ -12,7 +23,15 @@ type HomeActions = {
 	}
 	setMeasurement: {
 		type: "HOME_SET_MEASUREMENT"
-		payload: CompoundMeasurement[]
+		payload: CompoundMeasurementMinimal[]
+	}
+	setDataType: {
+		type: "HOME_SET_DATA_TYPE"
+		payload: DataType
+	}
+	setDesirableStations: {
+		type: "HOME_SET_DESIRABLE_STAIONS"
+		payload: DesirableStation[]
 	}
 }
 export type HomeAction = HomeActions[keyof HomeActions]
@@ -21,6 +40,8 @@ export default function HomeReducer(
 	oldState: HomeState = {
 		selectedStationId: null,
 		measurements: null,
+		dataType: DataType.Temperature,
+		desirableStations: [],
 	},
 	action: HomeAction,
 ): HomeState {
@@ -38,6 +59,16 @@ export default function HomeReducer(
 			return {
 				...oldState,
 				measurements: action.payload,
+			}
+		case "HOME_SET_DATA_TYPE":
+			return {
+				...oldState,
+				dataType: action.payload,
+			}
+		case "HOME_SET_DESIRABLE_STAIONS":
+			return {
+				...oldState,
+				desirableStations: action.payload,
 			}
 		default:
 			return oldState

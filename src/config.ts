@@ -1,4 +1,4 @@
-import { LatLng } from "./api"
+import { LatLng, StationDetails } from "./api"
 
 export const DEFAULT_BOUNDS = {
 	max: {
@@ -14,5 +14,7 @@ export const DEFAULT_CENTER: LatLng = {
 	latitude: 4.14,
 	longitude: -73.15,
 }
+
+export const Stations: StationDetails[] = []
 
 export const API_ENDPOINT = process.env.API_ENDPOINT as string

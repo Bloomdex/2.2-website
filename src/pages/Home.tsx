@@ -5,14 +5,28 @@ import { connect, ConnectedProps } from "react-redux"
 import Table from "../components/Table"
 import PossibleLoading from "../components/PossibleLoading"
 import MeasurementChart from "../components/MeasurmentChart"
+import { StationDetails } from "../api"
 
 const mapStateToProps = (state: RootState) => ({
-	stations: state.stations.sortedLatitude.slice(0, 10),
-	selectedStation: state.stations.default.find(
+	stations: state.home.desirableStations.map(ds => {
+		const res = {
+			...ds,
+			...(state.stations.stations.find(
+				s => s.id === ds.StationId,
+			) as StationDetails),
+		}
+		/// @ts-ignore
+		if (res.notFound === true) {
+			console.log(ds)
+			console.log("state stations:", state.stations.stations)
+		}
+		return res
+	}),
+	selectedStation: state.stations.stations.find(
 		station => station.id === state.home.selectedStationId,
 	),
 	stationMeasurements: state.home.measurements,
-	stationsIsLoading: state.stations.default.length === 0,
+	stationsIsLoading: state.home.desirableStations.length === 0,
 	measurementIsLoading: state.home.measurements === null,
 })
 
@@ -29,45 +43,47 @@ const Home = ({
 	stations,
 	rowOnClick,
 	selectedStation,
-	stationMeasurements,
 	stationsIsLoading,
 	measurementIsLoading,
-}: ConnectedProps<typeof connector>) => (
-	<TwoColumnLayout>
-		<Left>
-			<PossibleLoading loading={stationsIsLoading}>
-				<Table
-					head={[
-						{ key: "name" },
-						{ key: "country" },
-						{ key: "latitude" },
-						{ key: "longitude" },
-						{ key: "onClickButton", title: "Show details" },
-					]}
-					data={stations.map(s => ({
-						...s,
-						key: s.id.toString(),
-						onClickButton: (
-							<button
-								onClick={() => {
-									rowOnClick(s.id)
-								}}
-							>
-								Select
-							</button>
-						),
-					}))}
-				/>
-			</PossibleLoading>
-		</Left>
-		<Right>
-			{selectedStation ? (
-				<PossibleLoading loading={measurementIsLoading}>
-					<MeasurementChart />
+}: ConnectedProps<typeof connector>) => {
+	// console.dir(stations)
+	return (
+		<TwoColumnLayout>
+			<Left>
+				<PossibleLoading loading={stationsIsLoading}>
+					<Table
+						head={[
+							{ key: "name" },
+							{ key: "country" },
+							{ key: "maxTemperature" },
+							{ key: "avgHumidity" },
+							{ key: "onClickButton", title: "Show details" },
+						]}
+						/// @ts-ignore
+						data={stations.map(s => ({
+							...s,
+							key: s.id.toString(),
+							onClickButton: (
+								<button
+									onClick={() => {
+										rowOnClick(s.id)
+									}}
+								>
+									Select
+								</button>
+							),
+						}))}
+					/>
 				</PossibleLoading>
-			) : null}
-		</Right>
-	</TwoColumnLayout>
-)
-
+			</Left>
+			<Right>
+				{selectedStation ? (
+					<PossibleLoading loading={measurementIsLoading}>
+						<MeasurementChart />
+					</PossibleLoading>
+				) : null}
+			</Right>
+		</TwoColumnLayout>
+	)
+}
 export default connector(Home)

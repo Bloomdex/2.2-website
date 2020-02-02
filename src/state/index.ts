@@ -1,10 +1,4 @@
-import {
-	createStore,
-	combineReducers,
-	compose,
-	applyMiddleware,
-	ActionCreator,
-} from "redux"
+import { createStore, combineReducers, compose, applyMiddleware } from "redux"
 import { createBrowserHistory } from "history"
 import {
 	routerMiddleware,
@@ -16,9 +10,13 @@ import thunk, { ThunkAction } from "redux-thunk"
 import loginFormReducer, { LoginFormAction, LoginFormState } from "./loginForm"
 import userReducer, { UserAction, UserState } from "./user"
 import stationReducer, { StationAction, StationState } from "./stations"
-import { stationGetter, stationMeasurementGetter } from "./middlewares"
+import { loginSetup, stationMeasurementGetter } from "./middlewares"
 import HomeReducer, { HomeAction, HomeState } from "./home"
-import mapReducer, { MapAction, MapState } from "./map"
+import stationViewerReducer, {
+	StationViewerAction,
+	StationVieuwerState,
+} from "./stationViewer"
+import { AdminUsersAction } from "./adminUsers"
 
 export const history = createBrowserHistory()
 
@@ -36,7 +34,7 @@ export default function configureStore() {
 			user: userReducer,
 			stations: stationReducer,
 			home: HomeReducer,
-			map: mapReducer,
+			stationViewer: stationViewerReducer,
 		}),
 		// preloadedState,
 		(
@@ -47,7 +45,7 @@ export default function configureStore() {
 			applyMiddleware(
 				thunk,
 				routerMiddleware(history),
-				stationGetter,
+				loginSetup,
 				stationMeasurementGetter,
 			),
 		),
@@ -60,14 +58,15 @@ export type RootState = Readonly<{
 	user: Readonly<UserState>
 	stations: Readonly<StationState>
 	home: Readonly<HomeState>
-	map: Readonly<MapState>
+	stationViewer: Readonly<StationVieuwerState>
 }>
 export type Action =
 	| LoginFormAction
 	| UserAction
 	| StationAction
 	| HomeAction
-	| MapAction
+	| StationViewerAction
+	| AdminUsersAction
 	| RouterAction
 
 export type MapDispatchToProps = {

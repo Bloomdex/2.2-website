@@ -10,9 +10,17 @@ import Header from "./layout/Header"
 import Footer from "./layout/Footer"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
-import Map from "./pages/Map"
+import StationInfo from "./pages/StationViewer"
 
 const store = configureStore()
+
+declare global {
+	interface Window {
+		store: typeof store
+	}
+}
+
+window.store = store
 
 render(
 	<Provider store={store}>
@@ -27,10 +35,10 @@ render(
 							<Route path="/login">
 								<Login />
 							</Route>
-							<Route path="/map">
-								<Map />
+							<Route path="/stationviewer">
+								<StationInfo />
 							</Route>
-							<Route path="/">
+							<Route exact path="/">
 								<Home />
 							</Route>
 						</Switch>

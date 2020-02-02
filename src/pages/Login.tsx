@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, CSSProperties } from "react"
 import { connect, ConnectedProps } from "react-redux"
 import { RootState, MapDispatchToProps, Action } from "../state"
 import { Dispatch } from "redux"
@@ -43,6 +43,11 @@ const mapDispatchToProps = {
 const connector = connect(mapStateToProps, mapDispatchToProps)
 type Props = ConnectedProps<typeof connector>
 
+const labelStyle: CSSProperties = {
+	margin: "10px",
+	display: "inline-block",
+}
+
 const Login = ({
 	username,
 	password,
@@ -57,9 +62,9 @@ const Login = ({
 	}
 	return (
 		<main>
-			<form onSubmit={e => e.preventDefault()}>
-				<label>
-					username{" "}
+			<form onSubmit={e => e.preventDefault()} style={{ textAlign: "center" }}>
+				<label style={labelStyle}>
+					username:{" "}
 					<input
 						type="text"
 						onChange={e => onUsernameChange(e.target.value)}
@@ -67,8 +72,8 @@ const Login = ({
 					/>
 				</label>
 				<br />
-				<label>
-					password{" "}
+				<label style={labelStyle}>
+					password:{" "}
 					<input
 						type="password"
 						onChange={e => onPasswordChange(e.target.value)}
@@ -77,6 +82,10 @@ const Login = ({
 				</label>
 				<br />
 				<input
+					style={{
+						margin: "auto",
+						display: "inline-block",
+					}}
 					type="submit"
 					value="login"
 					onClick={() => {

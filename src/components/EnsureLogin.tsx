@@ -21,8 +21,6 @@ const mapDispatchToProps = {
 						authorities: apiResult.authorities,
 					},
 				})
-			} else {
-				dispatch(push("/login"))
 			}
 		}
 	},

@@ -1,8 +1,9 @@
 import { StationDetails } from "../api"
+import Fuse from "fuse.js"
 
 export type StationState = {
-	default: StationDetails[]
-	sortedLatitude: StationDetails[]
+	stations: StationDetails[]
+	fuseSeach: Fuse<StationDetails, typeof fuseOptions>
 }
 
 type StationActions = {
@@ -18,9 +19,15 @@ type StationActions = {
 
 export type StationAction = StationActions[keyof StationActions]
 
+const fuseOptions: Fuse.FuseOptions<StationDetails> = {
+	shouldSort: true,
+	threshold: 0.7,
+	keys: ["name", "country"],
+}
+
 const defaultStationState: StationState = {
-	default: [],
-	sortedLatitude: [],
+	stations: [],
+	fuseSeach: new Fuse([], fuseOptions),
 }
 
 export default function stationReducer(
@@ -31,17 +38,19 @@ export default function stationReducer(
 		case "ADD_STATION":
 			return {
 				...oldState,
-				default: [...oldState.default, action.payload],
-				sortedLatitude: [...oldState.sortedLatitude, action.payload].sort(
-					(a, b) => a.latitude - b.latitude,
+				stations: [...oldState.stations, action.payload],
+				fuseSeach: new Fuse(
+					[...oldState.stations, action.payload],
+					fuseOptions,
 				),
 			}
 		case "ADD_STATIONS":
 			return {
 				...oldState,
-				default: [...oldState.default, ...action.payload],
-				sortedLatitude: [...oldState.sortedLatitude, ...action.payload].sort(
-					(a, b) => a.latitude - b.latitude,
+				stations: [...oldState.stations, ...action.payload],
+				fuseSeach: new Fuse(
+					[...oldState.stations, ...action.payload],
+					fuseOptions,
 				),
 			}
 		default:

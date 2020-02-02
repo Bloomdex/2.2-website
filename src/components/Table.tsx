@@ -1,23 +1,26 @@
-import React, { CSSProperties } from "react"
+import React, { CSSProperties, HTMLAttributes } from "react"
 
-type Props<D extends { key: string | number }> = {
+export type Props<D extends { key: string | number }> = {
 	head: { key: keyof D; title?: string }[]
 	data: D[]
-}
+} & HTMLAttributes<HTMLTableElement>
 
 const borders: CSSProperties = {
 	border: "1px solid black",
-	padding: "10px",
+	padding: "5px",
 	textAlign: "center",
 }
 
 export default function Table<D extends { key: string }>({
 	head,
 	data,
+	...attrs
 }: Props<D>) {
 	return (
 		<table
+			{...attrs}
 			style={{
+				...(attrs.style ?? {}),
 				...borders,
 				borderCollapse: "collapse",
 			}}
