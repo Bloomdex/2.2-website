@@ -5,6 +5,7 @@ import { Action } from "./index"
 
 export type UserState = {
 	isLoggedIn: boolean
+	lastLoginFailed: boolean
 } & UserData
 
 type UserActions = {
@@ -15,12 +16,16 @@ type UserActions = {
 	logout: {
 		type: "USER_LOGOUT"
 	}
+	loginFailure: {
+		type: "USER_LOGIN_FAILURE"
+	}
 }
 
 export type UserAction = UserActions[keyof UserActions]
 
 const loggedOutState: UserState = {
 	isLoggedIn: false,
+	lastLoginFailed: false,
 	username: "",
 	authorities: [],
 }
@@ -37,6 +42,7 @@ export default function userReducer(
 				return {
 					...oldState,
 					isLoggedIn: true,
+					lastLoginFailed: false,
 					username: action.payload.username,
 					authorities: action.payload.authorities,
 				}
@@ -49,6 +55,11 @@ export default function userReducer(
 				return loggedOutState
 			}
 		}
+		case "USER_LOGIN_FAILURE":
+			return {
+				...loggedOutState,
+				lastLoginFailed: true,
+			}
 		default:
 			return oldState
 	}

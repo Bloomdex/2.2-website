@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import { RootState, MapDispatchToProps } from "../state"
 import { StationDetails } from "../api"
 import { connect, ConnectedProps } from "react-redux"

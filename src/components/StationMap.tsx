@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import Map from "pigeon-maps"
 import Marker from "pigeon-marker"
 import { RootState, MapDispatchToProps } from "../state"

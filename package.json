@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "node proxy.js",
-		"build": "BUILD_ENV=prod NODE_ENV=production parcel build src/index.html"
+		"build": "parcel build src/index.html --no-cache"
 	},
 	"keywords": [],
 	"author": "Mees van Dijk <mees@mees.io> (https://mees.io/)",
@@ -14,6 +14,7 @@
 		"connected-react-router": "^6.6.1",
 		"fuse.js": "^3.4.6",
 		"history": "^4.10.1",
+		"ky": "^0.16.2",
 		"pigeon-maps": "^0.14.0",
 		"pigeon-marker": "^0.3.4",
 		"react": "^16.12.0",

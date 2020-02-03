@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, ReactComponentElement } from "react"
+import * as React from "react"
+import { PropsWithChildren, ReactComponentElement } from "react"
 
 type Props<T> = {
 	value: T

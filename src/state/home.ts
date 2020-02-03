@@ -7,6 +7,7 @@ import {
 export enum DataType {
 	Temperature = 1,
 	Rain,
+	Humidity,
 }
 
 export type HomeState = {

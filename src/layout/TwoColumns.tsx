@@ -1,9 +1,11 @@
-import React, { PropsWithChildren } from "react"
-type Props = PropsWithChildren<{}>
-export default function TwoColumnLayout({ children }: Props) {
+import * as React from "react"
+import { PropsWithChildren, HTMLAttributes } from "react"
+type Props = PropsWithChildren<HTMLAttributes<HTMLDivElement>>
+export default function TwoColumnLayout({ style: userStyle, children }: Props) {
 	return (
 		<div
 			style={{
+				...userStyle,
 				display: "grid",
 				gridTemplateRows: "1fr",
 				gridTemplateColumns: "1fr 1fr",

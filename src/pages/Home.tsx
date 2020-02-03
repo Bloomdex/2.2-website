@@ -1,4 +1,4 @@
-import React from "react"
+import * as React from "react"
 import TwoColumnLayout, { Left, Right } from "../layout/TwoColumns"
 import { RootState, MapDispatchToProps } from "../state"
 import { connect, ConnectedProps } from "react-redux"
@@ -55,14 +55,15 @@ const Home = ({
 						head={[
 							{ key: "name" },
 							{ key: "country" },
-							{ key: "maxTemperature" },
-							{ key: "avgHumidity" },
+							{ key: "maxTemperature", title: "peak temperature (°C)" },
+							{ key: "avgHumidity", title: "Humidity (%)" },
 							{ key: "onClickButton", title: "Show details" },
 						]}
 						/// @ts-ignore
 						data={stations.map(s => ({
 							...s,
 							key: s.id.toString(),
+							avgHumidity: s.avgHumidity.toFixed(1),
 							onClickButton: (
 								<button
 									onClick={() => {

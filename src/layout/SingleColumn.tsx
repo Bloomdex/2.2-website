@@ -1,4 +1,6 @@
-import React, { PropsWithChildren } from "react"
+import * as React from "react"
+import { PropsWithChildren } from "react"
+
 type Props = PropsWithChildren<{}>
 
 export default function SingleColumnLayout({ children }: Props) {
@@ -6,7 +8,7 @@ export default function SingleColumnLayout({ children }: Props) {
 		<div
 			style={{
 				display: "grid",
-				gridTemplateRows: "100px 1fr 100px",
+				gridTemplateRows: "100px 2fr 100px",
 				gridTemplateColumns: "1fr",
 				placeItems: "center",
 				height: "100vh",

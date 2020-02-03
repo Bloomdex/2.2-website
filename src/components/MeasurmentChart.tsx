@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import {
 	LineChart,
 	Line,
@@ -6,6 +7,7 @@ import {
 	YAxis,
 	LineChartProps,
 	Tooltip,
+	Label,
 } from "recharts"
 import { RootState, MapDispatchToProps } from "../state"
 import { connect, ConnectedProps } from "react-redux"
@@ -13,12 +15,16 @@ import { DataType } from "../state/home"
 import SwitchComponent, { Case } from "./SwitchComponent"
 
 const mapStateToProps = (state: RootState) => ({
-	data: state.home.measurements?.map(m => ({
-		...m,
-		date: `${m.year}-${m.month}-${m.day}`,
-		avgRainfall: m.avgRainfall,
-		avgTemperature: m.avgTemperature,
-	})),
+	data: state.home.measurements?.map(m => {
+		console.log(m)
+		return {
+			...m,
+			date: `${m.year}-${m.month}-${m.day}`,
+			avgRainfall: m.avgRainfall,
+			avgTemperature: m.avgTemperature,
+			avgHumidity: m.avgHumidity,
+		}
+	}),
 	dataType: state.home.dataType,
 })
 
@@ -64,6 +70,19 @@ const MeasurementChart = ({ data, dataType, setDataType }: Props) => (
 					<Line type="monotone" dataKey="maxTemperature" stroke="#A8A8A8" />
 				</LineChart>
 			</Case>
+			<Case match={DataType.Humidity}>
+				<LineChart data={data} width={700} height={400}>
+					<XAxis dataKey="date" />
+					<YAxis
+						label={{
+							textAnchor: "precent",
+							position: "insideLeft",
+						}}
+					/>
+					<Tooltip />
+					<Line type="monotone" dataKey="avgHumidity" stroke="#E59F06" />
+				</LineChart>
+			</Case>
 		</SwitchComponent>
 		<ul style={{ display: "inline-block", listStyle: "none" }}>
 			<li style={liStyle}>
@@ -72,6 +91,11 @@ const MeasurementChart = ({ data, dataType, setDataType }: Props) => (
 			<li style={liStyle}>
 				<button onClick={() => setDataType(DataType.Temperature)}>
 					View temperature
+				</button>
+			</li>
+			<li style={liStyle}>
+				<button onClick={() => setDataType(DataType.Humidity)}>
+					View humidity
 				</button>
 			</li>
 		</ul>

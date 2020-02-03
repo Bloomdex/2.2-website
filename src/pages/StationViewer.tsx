@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import TwoColumnLayout, { Left, Right } from "../layout/TwoColumns"
 import { RootState, MapDispatchToProps } from "../state"
 import { connect, ConnectedProps } from "react-redux"
@@ -11,6 +12,13 @@ import SwitchComponent, {
 } from "../components/SwitchComponent"
 import { SelectionMethod, ViewingMethod } from "../state/stationViewer"
 import SearchStations from "../components/SearchStations"
+import {
+	StationDetails,
+	CompoundMeasurement,
+	FullMeasurement,
+	getXMLDataAveragesByStationId,
+} from "../api"
+import { Link } from "react-router-dom"
 
 const mapStateToProps = (state: RootState) => ({
 	selectedData:
@@ -24,6 +32,7 @@ const mapStateToProps = (state: RootState) => ({
 			? state.stationViewer.selectedStationMeasurement.compound
 			: state.stationViewer.selectedStationMeasurement.latest,
 	mapState: state.stationViewer.mapState,
+	stationId: state.stationViewer.selectedStationid,
 	selectionMethod: state.stationViewer.viewerState.selectionMethod,
 	viewingMethod: state.stationViewer.viewerState.viewingMethod,
 	measurementIsLoading:
@@ -56,6 +65,7 @@ const Stations = ({
 	selectedData,
 	selectionMethod,
 	viewingMethod,
+	stationId,
 	measurementIsLoading,
 	setSelectionMethod,
 	setViewingMethod,
@@ -81,7 +91,7 @@ const Stations = ({
 				</div>
 			</Left>
 			<Right>
-				{selectedData ? (
+				{selectedData || measurementIsLoading ? (
 					<div>
 						<button
 							onClick={() => setViewingMethod(ViewingMethod.StationDetails)}
@@ -103,16 +113,48 @@ const Stations = ({
 						<PossibleLoading loading={measurementIsLoading}>
 							<SwitchComponent value={viewingMethod}>
 								<Case match={ViewingMethod.StationDetails}>
-									<GenericTable data={selectedData} />
+									<GenericTable
+										showHeader={false}
+										data={selectedData as StationDetails}
+									/>
 								</Case>
 								<Case match={ViewingMethod.CompoundMeasurement}>
-									<GenericTable data={selectedData} />
+									<GenericTable data={selectedData as CompoundMeasurement} />
 								</Case>
 								<Case match={ViewingMethod.LatestMeasurement}>
-									<GenericTable data={selectedData} />
+									<GenericTable data={selectedData as FullMeasurement} />
 								</Case>
 								<Case match={defaultMatch}>This is wronge</Case>
 							</SwitchComponent>
+							<a
+								href={`data:application/json;charset=utf-8,${encodeURIComponent(
+									JSON.stringify(selectedData, null, 2),
+								)}`}
+								download={`${ViewingMethod[viewingMethod]}.json`}
+							>
+								download json
+							</a>
+							<button
+								onClick={async () => {
+									const xml = await getXMLDataAveragesByStationId(
+										stationId as number,
+									)
+									const downloadButton = document.createElement("a")
+									downloadButton.setAttribute(
+										"href",
+										`data:application/xml;charset=utf-8,${encodeURIComponent(
+											xml,
+										)}`,
+									)
+									downloadButton.setAttribute("download", "averages.xml")
+									downloadButton.style.display = "hidden"
+									document.body.appendChild(downloadButton)
+									downloadButton.click()
+									document.body.removeChild(downloadButton)
+								}}
+							>
+								Download xml
+							</button>
 						</PossibleLoading>
 					</div>
 				) : (

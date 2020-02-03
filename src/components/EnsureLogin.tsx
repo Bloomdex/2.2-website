@@ -1,4 +1,5 @@
-import React, { PropsWithChildren } from "react"
+import * as React from "react"
+import { PropsWithChildren } from "react"
 import { connect, ConnectedProps } from "react-redux"
 import { RootState, Action } from "../state"
 import { getLoginFromCookie, UserData } from "../api"

@@ -1,6 +1,7 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import { RootState, MapDispatchToProps } from "../state/index"
-import { UserAuthority } from "../api"
+import { UserAuthority, UserAuthorities } from "../api"
 import { connect, ConnectedProps } from "react-redux"
 import TwoColumnLayout, { Left, Right } from "../layout/TwoColumns"
 import { withRouter } from "react-router"
@@ -73,14 +74,18 @@ const UserPage = ({
 	submitAuthority,
 	submitPassword,
 }: Props) => (
-	<div>
+	<div style={{ textAlign: "center", height: "700px" }}>
 		<h2>{username}</h2>
-		<TwoColumnLayout>
+		<TwoColumnLayout
+			style={{
+				marginTop: "200px",
+			}}
+		>
 			<Left>
 				<h4>Authorities</h4>
 				<ul>
 					{authorities.map(auth => (
-						<li>
+						<li key={auth}>
 							{auth} -{" "}
 							<button onClick={() => removeAuthority(username, auth)}>
 								remove
@@ -94,13 +99,23 @@ const UserPage = ({
 						onChange={e => setAuthority(e.target.value)}
 						value={newAuthority}
 					>
-						<option value={UserAuthority.User}>User</option>
-						<option value={UserAuthority.Admin}>Admin</option>
+						<option value={"default"}>select an option</option>
+						{UserAuthorities.filter(
+							({ authority }) => !authorities.includes(authority),
+						).map(({ authority, title }) => (
+							<option key={authority} value={authority}>
+								{title}
+							</option>
+						))}
 					</select>
 				</label>
 				<button
+					style={{
+						color: newAuthority === "default" ? "grey" : "inherit",
+					}}
 					onClick={() =>
-						submitAuthority(username, newAuthority as UserAuthority)
+						newAuthority !== "default" &&
+						submitAuthority(username, newAuthority)
 					}
 				>
 					Add authority

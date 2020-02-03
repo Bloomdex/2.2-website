@@ -1,14 +1,17 @@
-import React, { useState, CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import { connect, ConnectedProps } from "react-redux"
 import { RootState, MapDispatchToProps, Action } from "../state"
 import { Dispatch } from "redux"
 import { getCurrentUser } from "../api"
 import { push } from "connected-react-router"
+import { Redirect } from "react-router"
 
 const mapStateToProps = (state: RootState) => ({
 	username: state.userInput.login.username,
 	password: state.userInput.login.password,
 	doRedirect: state.user.isLoggedIn,
+	lastLoginFailed: state.user.lastLoginFailed,
 })
 
 const mapDispatchToProps = {
@@ -32,10 +35,13 @@ const mapDispatchToProps = {
 					},
 				})
 				dispatch(push("/"))
+			} else {
+				dispatch({
+					type: "USER_LOGIN_FAILURE",
+				})
 			}
 		}
 	},
-	onLoggedIn: () => push("/"),
 }
 
 const connector = connect(mapStateToProps, mapDispatchToProps)
@@ -50,13 +56,13 @@ const Login = ({
 	username,
 	password,
 	doRedirect,
+	lastLoginFailed,
 	onUsernameChange,
 	onPasswordChange,
 	onSubmit,
-	onLoggedIn,
 }: Props) => {
 	if (doRedirect) {
-		onLoggedIn()
+		return <Redirect to="/" />
 	}
 	return (
 		<main>
@@ -90,6 +96,10 @@ const Login = ({
 						onSubmit(username, password)
 					}}
 				/>
+				<br />
+				{lastLoginFailed ? (
+					<span style={{ color: "red" }}>Wrong username or password</span>
+				) : null}
 			</form>
 		</main>
 	)

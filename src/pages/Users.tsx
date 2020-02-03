@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import { RootState, MapDispatchToProps } from "../state"
 import { ConnectedProps, connect } from "react-redux"
 import PossibleLoading from "../components/PossibleLoading"

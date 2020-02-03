@@ -1,4 +1,5 @@
 import { UserAuthority } from "../api"
+import { Action } from "./index"
 
 export type UserInputState = {
 	login: {
@@ -10,7 +11,7 @@ export type UserInputState = {
 		password: string
 	}
 	userPage: {
-		authority: UserAuthority
+		authority: UserAuthority | "default"
 		password: string
 	}
 }
@@ -43,22 +44,24 @@ type UserInputActions = {
 }
 export type UserInputAction = UserInputActions[keyof UserInputActions]
 
-export default function userInputReducer(
-	oldState: UserInputState = {
-		login: {
-			username: "",
-			password: "",
-		},
-		newUser: {
-			username: "",
-			password: "",
-		},
-		userPage: {
-			password: "",
-			authority: UserAuthority.User,
-		},
+const defaultUserInputState: UserInputState = {
+	login: {
+		username: "",
+		password: "",
 	},
-	action: UserInputAction,
+	newUser: {
+		username: "",
+		password: "",
+	},
+	userPage: {
+		password: "",
+		authority: "default",
+	},
+}
+
+export default function userInputReducer(
+	oldState: UserInputState = defaultUserInputState,
+	action: Action,
 ): UserInputState {
 	switch (action.type) {
 		case "USER_INPUT_LOGIN_SET_USERNAME":
@@ -108,6 +111,19 @@ export default function userInputReducer(
 					...oldState.userPage,
 					authority: action.payload,
 				},
+			}
+		case "ADMIN_USERS_ADD_AUTHORITY":
+			return {
+				...oldState,
+				userPage: {
+					...oldState.userPage,
+					authority: "default",
+				},
+			}
+		case "USER_LOGIN":
+			return {
+				...oldState,
+				login: defaultUserInputState.login,
 			}
 		default:
 			return oldState

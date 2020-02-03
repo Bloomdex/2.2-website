@@ -5,6 +5,7 @@ import configureStore from "./state"
 declare global {
 	interface Window {
 		store: ReturnType<typeof configureStore>
+		test: UserAuthority[]
 	}
 }
 
@@ -22,7 +23,7 @@ const path = (...parts: string[]) => {
 
 const customFetch = (
 	url: string,
-	options?: RequestInit,
+	options: RequestInit = {},
 	params?: URLSearchParams,
 ) =>
 	fetch(`${url}${params ? `?${params.toString()}` : ""}`, {
@@ -31,6 +32,10 @@ const customFetch = (
 		mode: "cors",
 		cache: "default",
 		...options,
+		headers: {
+			Accept: "application/json",
+			...options.headers,
+		},
 	})
 
 const redirectIfUnauthorized = (response: Response) => {
@@ -62,7 +67,11 @@ const WithAuth = ({ username, password }: Credentials) => ({
 })
 
 export async function getLoginFromCookie(): Promise<GetLoginFromCookieReturn> {
-	const response = await customFetch(path("/me"))
+	const response = await customFetch(path("/me"), {
+		headers: {
+			Accept: "application/json",
+		},
+	})
 	if (response.ok) {
 		return response.json()
 	} else {
@@ -79,6 +88,7 @@ export async function getCurrentUser(
 	const response = await customFetch(path("/me"), {
 		headers: {
 			...WithAuth(creds),
+			Accept: "application/json",
 		},
 	})
 	if (response.ok) {
@@ -93,11 +103,8 @@ export async function getCurrentUser(
 }
 
 export async function logout() {
-	const response = await customFetch(path("/logout"))
-	if (response.ok) {
-		return response.json()
-	} else {
-		// redirectIfUnauthorized(response)
+	const response = await customFetch(path("/logout"), {})
+	if (!response.ok) {
 		throw new Error(response.statusText)
 	}
 }
@@ -146,6 +153,10 @@ export type Date = {
 	day: number
 }
 
+const calculateHumidity = (dewTemp: number, temp: number) =>
+	(100 * Math.exp((17.625 * dewTemp) / (243.04 + dewTemp))) /
+	Math.exp((17.625 * temp) / (243.04 + temp))
+
 export type CompoundMeasurementMinimal = {
 	avgTemperature: number
 	minTemperature: number
@@ -156,6 +167,7 @@ export type CompoundMeasurementMinimal = {
 	maxRainfall: number
 
 	avgDewPoint: number
+	avgHumidity: number
 } & Date
 
 // type GetMeasureMentsReturn = Promise<
@@ -169,7 +181,10 @@ export async function getCompoundMeasurementMinimal(
 	)
 
 	if (response.ok) {
-		return response.json()
+		return (await response.json()).map((m: CompoundMeasurementMinimal) => ({
+			avgHumidity: calculateHumidity(m.avgDewPoint, m.avgTemperature),
+			...m,
+		}))
 	} else {
 		redirectIfUnauthorized(response)
 		throw Error(response.statusText)
@@ -270,7 +285,14 @@ export enum UserAuthority {
 	User = "ROLE_USER",
 	// Staff = "ROLE_STAFF",
 	Admin = "ROLE_ADMIN",
+	Robot = "ROLE_ROBOT",
 }
+export const UserAuthorities = [
+	{ authority: UserAuthority.Admin, title: "admin" },
+	{ authority: UserAuthority.User, title: "user" },
+	{ authority: UserAuthority.Robot, title: "robot" },
+]
+// window.test = s
 
 export async function getUsers(): Promise<UserData[]> {
 	const response = await customFetch(path("/users"))
@@ -299,7 +321,7 @@ export async function addUser(username: string, password: string) {
 }
 
 export async function deleteUser(username: string) {
-	const response = await customFetch(path(`/users/${username}`), {
+	const response = await customFetch(path(`/users/${username}/`), {
 		method: "DELETE",
 	})
 	if (!response.ok) {
@@ -341,14 +363,31 @@ export async function changeUserPassword(
 	username: string,
 	newPassword: string,
 ) {
-	const response = await customFetch(path(`/users/${username}`), {
+	const response = await customFetch(path(`/users/${username}/`), {
 		method: "PUT",
-		body: JSON.stringify({ password: newPassword }),
+		body: JSON.stringify({ password: newPassword, enabled: true }),
 		headers: {
 			"Content-Type": "application/json",
 		},
 	})
 	if (!response.ok) {
+		throw new Error(response.statusText)
+	}
+}
+
+export async function getXMLDataAveragesByStationId(
+	stationId: StationDetails["id"],
+): Promise<string> {
+	const response = await customFetch(
+		path(`/stations/${stationId}/measurements/average/month`),
+		{ headers: { Accept: "application/xml" } },
+	)
+	if (response.ok) {
+		const xml = await response.text()
+		console.log(xml)
+		return xml
+	} else {
+		redirectIfUnauthorized(response)
 		throw new Error(response.statusText)
 	}
 }

@@ -19,13 +19,15 @@ import { ViewingMethod } from "./stationViewer"
 import { AdminUsersAction } from "./adminUsers"
 import { push } from "connected-react-router"
 
+let lastActionType: string = ""
 export const loginHandling: Middleware<
 	{},
 	RootState,
 	/// @ts-ignore
 	Dispatch<Action>
 > = store => next => (action: Action) => {
-	if (action.type === "USER_LOGIN") {
+	lastActionType = action.type
+	if (action.type === "USER_LOGIN" && lastActionType !== "USER_LOGOUT") {
 		store.dispatch(((async (dispatch: Dispatch<Action>) => {
 			const stations = await getStationsByRadius()
 

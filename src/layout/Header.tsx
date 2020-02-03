@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react"
+import * as React from "react"
+import { CSSProperties } from "react"
 import { connect, ConnectedProps } from "react-redux"
 import { RootState } from "../state"
 import { Link } from "react-router-dom"
@@ -31,6 +32,9 @@ const Header = ({ isLoggedIn, username, isAdmin, handleLogout }: Props) => (
 			gridTemplateRows: "1fr",
 			gridTemplateColumns: "400px 600px 1fr 300px",
 			width: "100vw",
+			padding: "20px 20px 0px",
+			boxSizing: "border-box",
+			backgroundColor: "#85D5FF",
 		}}
 	>
 		<h1 style={{ margin: "30px auto" }}>Vegaflor weather service</h1>
@@ -64,8 +68,15 @@ const Header = ({ isLoggedIn, username, isAdmin, handleLogout }: Props) => (
 						textAlign: "center",
 					}}
 				>
-					<span style={{ margin: "auto" }}>logged in user: {username}</span>
-					<button onClick={() => handleLogout()}>logout</button>
+					<span style={{ margin: "auto", fontSize: "1.2em" }}>
+						logged in user:
+						<br />
+						{username}
+					</span>
+					<br />
+					<button style={{ fontSize: "1.1em" }} onClick={() => handleLogout()}>
+						logout
+					</button>
 				</div>
 			</>
 		) : null}
