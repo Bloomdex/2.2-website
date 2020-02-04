@@ -11,7 +11,7 @@ const app = express()
 app.use(
 	"/api",
 	proxy({
-		target: "https://api.vegaflor.bloomdex.org",
+		target: "https://api.vegaflor.bloomdex.org:80",
 		changeOrigin: true,
 	}),
 )
