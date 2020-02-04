@@ -9,9 +9,6 @@ declare global {
 	}
 }
 
-export const cutNumber = (data: number, decCount: number) =>
-	parseFloat(data.toFixed(decCount))
-
 const path = (...parts: string[]) => {
 	return [
 		window.location.protocol,
