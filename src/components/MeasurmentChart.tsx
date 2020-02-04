@@ -13,18 +13,16 @@ import { RootState, MapDispatchToProps } from "../state"
 import { connect, ConnectedProps } from "react-redux"
 import { DataType } from "../state/home"
 import SwitchComponent, { Case } from "./SwitchComponent"
+import { cutNumber } from "../util"
 
 const mapStateToProps = (state: RootState) => ({
-	data: state.home.measurements?.map(m => {
-		console.log(m)
-		return {
-			...m,
-			date: `${m.year}-${m.month}-${m.day}`,
-			avgRainfall: m.avgRainfall,
-			avgTemperature: m.avgTemperature,
-			avgHumidity: m.avgHumidity,
-		}
-	}),
+	data: state.home.measurements?.map(m => ({
+		...m,
+		date: `${m.year}-${m.month}-${m.day}`,
+		avgRainfall: cutNumber(m.avgRainfall, 3),
+		avgTemperature: cutNumber(m.avgTemperature, 3),
+		avgHumidity: cutNumber(m.avgHumidity, 3),
+	})),
 	dataType: state.home.dataType,
 })
 
@@ -80,7 +78,7 @@ const MeasurementChart = ({ data, dataType, setDataType }: Props) => (
 						}}
 					/>
 					<Tooltip />
-					<Line type="monotone" dataKey="avgHumidity" stroke="#E59F06" />
+					<Line type="monotone" dataKey="avgHumidity" stroke="#25a3fc" />
 				</LineChart>
 			</Case>
 		</SwitchComponent>

@@ -23,6 +23,8 @@ export default function Table<D extends { key: string }>({
 		<table
 			{...attrs}
 			style={{
+				backgroundColor: "white",
+				boxShadow: "box-shadow: -13px 13px 5px -6px rgba(0,0,0,0.32)",
 				...(attrs.style ?? {}),
 				...borders,
 				borderCollapse: "collapse",

@@ -94,7 +94,8 @@ const UserPage = ({
 					))}
 				</ul>
 				<label>
-					add authority
+					add authority:
+					<br />
 					<select
 						onChange={e => setAuthority(e.target.value)}
 						value={newAuthority}
@@ -109,6 +110,7 @@ const UserPage = ({
 						))}
 					</select>
 				</label>
+				<br />
 				<button
 					style={{
 						color: newAuthority === "default" ? "grey" : "inherit",

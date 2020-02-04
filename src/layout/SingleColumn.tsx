@@ -1,5 +1,5 @@
 import * as React from "react"
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, CSSProperties } from "react"
 
 type Props = PropsWithChildren<{}>
 
@@ -8,10 +8,11 @@ export default function SingleColumnLayout({ children }: Props) {
 		<div
 			style={{
 				display: "grid",
-				gridTemplateRows: "100px 2fr 100px",
+				gridTemplateRows: "min-content 1fr min-content",
 				gridTemplateColumns: "1fr",
 				placeItems: "center",
-				height: "100vh",
+				minHeight: "100vh",
+				alignContent: "space-between",
 			}}
 		>
 			{children}
@@ -29,9 +30,13 @@ export const Top = ({ children }: PropsWithChildren<{}>) => (
 	</div>
 )
 
-export const Middle = ({ children }: PropsWithChildren<{}>) => (
+export const Middle = ({
+	children,
+	style,
+}: PropsWithChildren<{ style?: CSSProperties }>) => (
 	<div
 		style={{
+			...(style ?? {}),
 			gridRow: 2,
 		}}
 	>

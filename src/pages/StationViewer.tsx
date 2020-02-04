@@ -19,6 +19,7 @@ import {
 	getXMLDataAveragesByStationId,
 } from "../api"
 import { Link } from "react-router-dom"
+import { download } from "../util"
 
 const mapStateToProps = (state: RootState) => ({
 	selectedData:
@@ -126,31 +127,23 @@ const Stations = ({
 								</Case>
 								<Case match={defaultMatch}>This is wronge</Case>
 							</SwitchComponent>
-							<a
-								href={`data:application/json;charset=utf-8,${encodeURIComponent(
-									JSON.stringify(selectedData, null, 2),
-								)}`}
-								download={`${ViewingMethod[viewingMethod]}.json`}
+							<button
+								onClick={() => {
+									download(
+										"application/json",
+										"average.json",
+										JSON.stringify(selectedData, null, 2),
+									)
+								}}
 							>
-								download json
-							</a>
+								Download json
+							</button>
 							<button
 								onClick={async () => {
 									const xml = await getXMLDataAveragesByStationId(
 										stationId as number,
 									)
-									const downloadButton = document.createElement("a")
-									downloadButton.setAttribute(
-										"href",
-										`data:application/xml;charset=utf-8,${encodeURIComponent(
-											xml,
-										)}`,
-									)
-									downloadButton.setAttribute("download", "averages.xml")
-									downloadButton.style.display = "hidden"
-									document.body.appendChild(downloadButton)
-									downloadButton.click()
-									document.body.removeChild(downloadButton)
+									download("application/xml", "average.xml", xml)
 								}}
 							>
 								Download xml

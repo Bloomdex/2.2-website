@@ -37,6 +37,7 @@ export const loginHandling: Middleware<
 			const stations = await getDesirableStations()
 
 			dispatch({ type: "HOME_SET_DESIRABLE_STAIONS", payload: stations })
+			dispatch({ type: "HOME_SELECT_STATION", payload: stations[0].StationId })
 		}) as unknown) as Action)
 	}
 	if (action.type === "USER_LOGOUT") {

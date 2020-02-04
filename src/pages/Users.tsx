@@ -40,7 +40,13 @@ const Users = ({ users, isLoading, addUser, deleteUser }: Props) => (
 					data={users.map(u => ({
 						...u,
 						key: u.username,
-						username: <Link to={`/users/${u.username}`}>{u.username}</Link>,
+						username: (
+							<Link to={`/users/${u.username}`}>
+								<span style={{ textDecoration: "underline" }}>
+									{u.username}
+								</span>
+							</Link>
+						),
 						authorities: u.authorities.join(", "),
 						deleteUser:
 							users.length > 1 ? (

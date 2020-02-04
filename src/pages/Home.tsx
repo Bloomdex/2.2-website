@@ -6,6 +6,8 @@ import Table from "../components/Table"
 import PossibleLoading from "../components/PossibleLoading"
 import MeasurementChart from "../components/MeasurmentChart"
 import { StationDetails } from "../api"
+import { cutNumber } from "../util"
+import { DataType } from "../state/home"
 
 const mapStateToProps = (state: RootState) => ({
 	stations: state.home.desirableStations.map(ds => {
@@ -22,9 +24,11 @@ const mapStateToProps = (state: RootState) => ({
 		}
 		return res
 	}),
+
 	selectedStation: state.stations.stations.find(
 		station => station.id === state.home.selectedStationId,
 	),
+	selectedDataType: DataType[state.home.dataType],
 	stationMeasurements: state.home.measurements,
 	stationsIsLoading: state.home.desirableStations.length === 0,
 	measurementIsLoading: state.home.measurements === null,
@@ -43,6 +47,7 @@ const Home = ({
 	stations,
 	rowOnClick,
 	selectedStation,
+	selectedDataType,
 	stationsIsLoading,
 	measurementIsLoading,
 }: ConnectedProps<typeof connector>) => {
@@ -63,7 +68,7 @@ const Home = ({
 						data={stations.map(s => ({
 							...s,
 							key: s.id.toString(),
-							avgHumidity: s.avgHumidity.toFixed(1),
+							avgHumidity: cutNumber(s.avgHumidity, 2),
 							onClickButton: (
 								<button
 									onClick={() => {
@@ -80,7 +85,11 @@ const Home = ({
 			<Right>
 				{selectedStation ? (
 					<PossibleLoading loading={measurementIsLoading}>
-						<MeasurementChart />
+						<div style={{ textAlign: "center", backgroundColor: "white" }}>
+							<h1>{selectedStation.name}</h1>
+							<h3>{selectedDataType}</h3>
+							<MeasurementChart />
+						</div>
 					</PossibleLoading>
 				) : null}
 			</Right>
